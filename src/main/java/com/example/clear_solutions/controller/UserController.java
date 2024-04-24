@@ -5,6 +5,8 @@ import com.example.clear_solutions.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -16,36 +18,38 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final ServletRequestAttributes attributes;
 
     public UserController(UserService userService) {
         this.userService = userService;
+        attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     }
 
     @PostMapping("/create")
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user);
-        Map<String, Object> response = createJsonApiResponse(createdUser, "api/v1/create");
+        Map<String, Object> response = createJsonApiResponse(createdUser, attributes.getRequest().getRequestURL().toString());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("update/{id}")
     public ResponseEntity<Map<String, Object>> updateUserFields(@PathVariable Long id, @RequestBody User userUpdates) {
         User updatedUser = userService.updateUserFields(id, userUpdates);
-        Map<String, Object> response = createJsonApiResponse(updatedUser, "api/v1/users/update/" + id);
+        Map<String, Object> response = createJsonApiResponse(updatedUser, attributes.getRequest().getRequestURL().toString());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("update-all/{id}/")
     public ResponseEntity<Map<String, Object>> updateAllUserFields(@PathVariable Long id, @RequestBody User userUpdates) {
         User updatedUser = userService.updateAllUserFields(id, userUpdates);
-        Map<String, Object> response = createJsonApiResponse(updatedUser, "api/v1/users/update-all/" + id);
+        Map<String, Object> response = createJsonApiResponse(updatedUser, attributes.getRequest().getRequestURL().toString());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        Map<String, Object> response = createJsonApiResponse(null, "api/v1/users/delete/" + id);
+        Map<String, Object> response = createJsonApiResponse(null, attributes.getRequest().getRequestURL().toString());
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
@@ -53,7 +57,7 @@ public class UserController {
     public ResponseEntity<List<Map<String, Object>>> findUsersByBirthDateRange(@RequestBody LocalDate from, @RequestBody LocalDate to) {
         List<User> users = userService.findUsersByBirthDateRange(from, to);
         List<Map<String, Object>> responses = users.stream()
-                .map(user -> createJsonApiResponse(user, "api/v1/users/search"))
+                .map(user -> createJsonApiResponse(user, attributes.getRequest().getRequestURL().toString()))
                 .toList();
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
