@@ -15,27 +15,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        assert attributes != null;
-        String url = attributes.getRequest().getRequestURL().toString();
-
-        ErrorResponse.Error error = new ErrorResponse.Error();
-        error.setStatus(400);
-        return getErrorResponseEntity(e, url, error);
+        return createErrorResponse(e, 400);
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
+        return createErrorResponse(e, 500);
+    }
+
+    private ResponseEntity<ErrorResponse> createErrorResponse(Exception e, int status) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         assert attributes != null;
         String url = attributes.getRequest().getRequestURL().toString();
 
         ErrorResponse.Error error = new ErrorResponse.Error();
-        error.setStatus(500);
-        return getErrorResponseEntity(e, url, error);
-    }
-
-    private ResponseEntity<ErrorResponse> getErrorResponseEntity(Exception e, String url, ErrorResponse.Error error) {
+        error.setStatus(status);
         error.setDetail(e.getMessage());
         error.setCode(e.getStackTrace()[0].getLineNumber());
         error.setLinks(Map.of("about", url));
@@ -43,6 +37,6 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setErrors(List.of(error));
 
-        return ResponseEntity.status(400).body(errorResponse);
+        return ResponseEntity.status(status).body(errorResponse);
     }
 }
