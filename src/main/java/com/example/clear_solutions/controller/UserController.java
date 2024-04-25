@@ -3,6 +3,7 @@ package com.example.clear_solutions.controller;
 import com.example.clear_solutions.dto.UserResponse;
 import com.example.clear_solutions.model.User;
 import com.example.clear_solutions.service.UserService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +55,9 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<UserResponse>> findUsersByBirthDateRange(@RequestBody LocalDate from, @RequestBody LocalDate to) {
+    public ResponseEntity<List<UserResponse>> findUsersByBirthDateRange(
+            @RequestParam("from") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate from,
+            @RequestParam("to") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate to) {
         List<User> users = userService.findUsersByBirthDateRange(from, to);
         String requestUrl = getRequestUrl();
         List<UserResponse> responses = users.stream()
