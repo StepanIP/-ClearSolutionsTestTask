@@ -3,12 +3,10 @@ package com.example.clear_solutions.service;
 import com.example.clear_solutions.model.User;
 import com.example.clear_solutions.repository.UserRepository;
 import com.example.clear_solutions.service.impl.UserServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -20,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-
+@SpringBootTest
 public class UserServiceImplTest {
 
     @InjectMocks
@@ -29,10 +27,6 @@ public class UserServiceImplTest {
     @Mock
     UserRepository userRepository;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     @DisplayName("Creating a user with valid age returns the created user")

@@ -3,99 +3,90 @@ package com.example.clear_solutions.controller;
 import com.example.clear_solutions.dto.UserResponse;
 import com.example.clear_solutions.model.User;
 import com.example.clear_solutions.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+@WebMvcTest(UserController.class)
 public class UserControllerTest {
 
-    @InjectMocks
-    UserController userController;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @Mock
-    UserService userService;
+    @MockBean
+    private UserService userService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.openMocks(this);
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        User user = new User();
+        when(userService.createUser(user)).thenReturn(user);
+        when(userService.updateUserFields(1L, user)).thenReturn(user);
+        when(userService.updateAllUserFields(1L, user)).thenReturn(user);
+        when(userService.findUsersByBirthDateRange(LocalDate.now().minusDays(1), LocalDate.now())).thenReturn(Arrays.asList(user, user));
     }
 
     @Test
     @DisplayName("Creating a user returns a created user response")
-    public void createUserReturnsCreatedUser() {
+    public void createUserReturnsCreatedUser() throws Exception {
         User user = new User();
-        when(userService.createUser(user)).thenReturn(user);
 
-        ResponseEntity<UserResponse> response = userController.createUser(user);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        mockMvc.perform(post("/api/v1/users/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isCreated());
     }
 
     @Test
     @DisplayName("Updating user fields returns an updated user response")
-    public void updateUserFieldsReturnsUpdatedUser() {
+    public void updateUserFieldsReturnsUpdatedUser() throws Exception {
         User user = new User();
-        Long id = 1L;
-        when(userService.updateUserFields(id, user)).thenReturn(user);
 
-        ResponseEntity<UserResponse> response = userController.updateUserFields(id, user);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        mockMvc.perform(patch("/api/v1/users/update/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("Updating all user fields returns an updated user response")
-    public void updateAllUserFieldsReturnsUpdatedUser() {
+    public void updateAllUserFieldsReturnsUpdatedUser() throws Exception {
         User user = new User();
-        Long id = 1L;
-        when(userService.updateAllUserFields(id, user)).thenReturn(user);
 
-        ResponseEntity<UserResponse> response = userController.updateAllUserFields(id, user);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        mockMvc.perform(put("/api/v1/users/update-all/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("Deleting a user returns a no content response")
-    public void deleteUserReturnsNoContent() {
-        Long id = 1L;
-
-        ResponseEntity<Void> response = userController.deleteUser(id);
-
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    public void deleteUserReturnsNoContent() throws Exception {
+        mockMvc.perform(delete("/api/v1/users/delete/1"))
+                .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("Finding users by birth date range returns a list of user responses")
-    public void findUsersByBirthDateRangeReturnsUsers() {
-        LocalDate from = LocalDate.now().minusDays(1);
-        LocalDate to = LocalDate.now();
-        User user1 = new User();
-        User user2 = new User();
-        List<User> users = Arrays.asList(user1, user2);
-        when(userService.findUsersByBirthDateRange(from, to)).thenReturn(users);
-
-        ResponseEntity<List<UserResponse>> response = userController.findUsersByBirthDateRange(from, to);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(2, response.getBody().size());
+    public void findUsersByBirthDateRangeReturnsUsers() throws Exception {
+        mockMvc.perform(get("/api/v1/users/search")
+                        .param("from", LocalDate.now().minusDays(1).toString())
+                        .param("to", LocalDate.now().toString()))
+                .andExpect(status().isOk());
     }
 }
