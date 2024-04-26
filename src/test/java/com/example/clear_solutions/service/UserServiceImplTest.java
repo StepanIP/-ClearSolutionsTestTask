@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
-
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -18,16 +17,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+/**
+ * UserServiceImplTest is a test class for UserServiceImpl.
+ * It uses Spring's ReflectionTestUtils to set private fields.
+ * It also uses Mockito to mock the UserRepository.
+ */
 @SpringBootTest
 public class UserServiceImplTest {
 
+    /**
+     * The UserServiceImpl instance to be tested.
+     * This instance is automatically injected with mocks by Mockito.
+     */
     @InjectMocks
     UserServiceImpl userService;
 
+    /**
+     * The mocked UserRepository.
+     */
     @Mock
     UserRepository userRepository;
 
-
+    /**
+     * Tests that creating a user with a valid age returns the created user.
+     */
     @Test
     @DisplayName("Creating a user with valid age returns the created user")
     public void createUserWithValidAgeReturnsUser() {
@@ -40,6 +53,9 @@ public class UserServiceImplTest {
         assertEquals(user, createdUser);
     }
 
+    /**
+     * Tests that creating a user with an invalid age throws an IllegalArgumentException.
+     */
     @Test
     @DisplayName("Creating a user with invalid age throws IllegalArgumentException")
     public void createUserWithInvalidAgeThrowsException() {
@@ -50,6 +66,9 @@ public class UserServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> userService.createUser(user));
     }
 
+    /**
+     * Tests that updating user fields returns the updated user.
+     */
     @Test
     @DisplayName("Updating user fields returns the updated user")
     public void updateUserFieldsReturnsUpdatedUser() {
@@ -63,6 +82,9 @@ public class UserServiceImplTest {
         assertEquals(user, updatedUser);
     }
 
+    /**
+     * Tests that updating all user fields returns the updated user.
+     */
     @Test
     @DisplayName("Updating all user fields returns the updated user")
     public void updateAllUserFieldsReturnsUpdatedUser() {
@@ -82,6 +104,10 @@ public class UserServiceImplTest {
 
         assertEquals(user, updatedUser);
     }
+
+    /**
+     * Tests that updating all user fields with missing fields throws an IllegalArgumentException.
+     */
     @Test
     @DisplayName("Updating all user fields with missing fields throws IllegalArgumentException")
     public void updateAllUserFieldsWithMissingFieldsThrowsException() {
@@ -94,12 +120,18 @@ public class UserServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> userService.updateAllUserFields(1L, userUpdates));
     }
 
+    /**
+     * Tests that deleting a user does not throw an exception.
+     */
     @Test
     @DisplayName("Deleting a user does not throw an exception")
     public void deleteUserDoesNotThrowException() {
         userService.deleteUser(1L);
     }
 
+    /**
+     * Tests that finding users by a valid birth date range does not throw an exception.
+     */
     @Test
     @DisplayName("Finding users by valid birth date range does not throw an exception")
     public void findUsersByValidBirthDateRangeDoesNotThrowException() {
@@ -109,6 +141,9 @@ public class UserServiceImplTest {
         userService.findUsersByBirthDateRange(from, to);
     }
 
+    /**
+     * Tests that finding users by an invalid birth date range throws an IllegalArgumentException.
+     */
     @Test
     @DisplayName("Finding users by invalid birth date range throws IllegalArgumentException")
     public void findUsersByInvalidBirthDateRangeThrowsException() {

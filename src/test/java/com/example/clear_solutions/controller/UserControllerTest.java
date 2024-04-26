@@ -20,18 +20,37 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * UserControllerTest is a test class for UserController.
+ * It uses Spring's MockMvc to simulate HTTP requests and responses.
+ * It also uses Mockito to mock the UserService.
+ */
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
 
+    /**
+     * The MockMvc instance used to simulate HTTP requests and responses.
+     */
     @Autowired
     private MockMvc mockMvc;
 
+    /**
+     * The mocked UserService.
+     */
     @MockBean
     private UserService userService;
 
+    /**
+     * The ObjectMapper used to convert objects to and from JSON.
+     */
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * Sets up the tests.
+     * This method is run before each test.
+     * It sets up the behavior of the mocked UserService.
+     */
     @BeforeEach
     public void setup() {
         User user = new User();
@@ -41,6 +60,9 @@ public class UserControllerTest {
         when(userService.findUsersByBirthDateRange(LocalDate.now().minusDays(1), LocalDate.now())).thenReturn(Arrays.asList(user, user));
     }
 
+    /**
+     * Tests that creating a user returns a created user response.
+     */
     @Test
     @DisplayName("Creating a user returns a created user response")
     public void createUserReturnsCreatedUser() throws Exception {
@@ -52,6 +74,9 @@ public class UserControllerTest {
                 .andExpect(status().isCreated());
     }
 
+    /**
+     * Tests that updating user fields returns an updated user response.
+     */
     @Test
     @DisplayName("Updating user fields returns an updated user response")
     public void updateUserFieldsReturnsUpdatedUser() throws Exception {
@@ -63,6 +88,9 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    /**
+     * Tests that updating all user fields returns an updated user response.
+     */
     @Test
     @DisplayName("Updating all user fields returns an updated user response")
     public void updateAllUserFieldsReturnsUpdatedUser() throws Exception {
@@ -74,6 +102,9 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    /**
+     * Tests that deleting a user returns a no content response.
+     */
     @Test
     @DisplayName("Deleting a user returns a no content response")
     public void deleteUserReturnsNoContent() throws Exception {
@@ -81,6 +112,9 @@ public class UserControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    /**
+     * Tests that finding users by birthdate range returns a list of user responses.
+     */
     @Test
     @DisplayName("Finding users by birth date range returns a list of user responses")
     public void findUsersByBirthDateRangeReturnsUsers() throws Exception {

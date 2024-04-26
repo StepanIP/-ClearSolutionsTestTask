@@ -14,12 +14,26 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * GlobalExceptionHandlerTest is a test class for GlobalExceptionHandler.
+ * It uses Spring's MockHttpServletRequest to simulate HTTP requests.
+ * It also uses Mockito to inject mocks.
+ */
 @SpringBootTest
 public class GlobalExceptionHandlerTest {
 
+    /**
+     * The GlobalExceptionHandler instance to be tested.
+     * This instance is automatically injected with mocks by Mockito.
+     */
     @InjectMocks
     GlobalExceptionHandler globalExceptionHandler;
 
+    /**
+     * Sets up the tests.
+     * This method is run before each test.
+     * It opens the mocks and sets up the RequestContextHolder.
+     */
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
@@ -27,6 +41,9 @@ public class GlobalExceptionHandlerTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
+    /**
+     * Tests that handling an IllegalArgumentException returns a 400 error response.
+     */
     @Test
     @DisplayName("IllegalArgumentException returns a 400 error response")
     public void handleIllegalArgumentExceptionReturnsBadRequest() {
@@ -37,6 +54,9 @@ public class GlobalExceptionHandlerTest {
         assertEquals(400, response.getStatusCodeValue());
     }
 
+    /**
+     * Tests that handling a RuntimeException returns a 500 error response.
+     */
     @Test
     @DisplayName("RuntimeException returns a 500 error response")
     public void handleRuntimeExceptionReturnsInternalServerError() {
