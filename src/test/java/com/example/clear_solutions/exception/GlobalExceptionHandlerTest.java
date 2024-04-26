@@ -13,6 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 public class GlobalExceptionHandlerTest {
 
     @InjectMocks

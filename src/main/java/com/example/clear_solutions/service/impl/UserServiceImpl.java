@@ -41,6 +41,11 @@ public class UserServiceImpl implements UserService {
     }
 
     public User updateAllUserFields(Long id, User userUpdates) {
+        if (userUpdates.getEmail() == null || userUpdates.getFirstName() == null || userUpdates.getLastName() == null ||
+            userUpdates.getBirthDate() == null || userUpdates.getAddress() == null || userUpdates.getPhoneNumber() == null) {
+            throw new IllegalArgumentException("All fields must be updated");
+        }
+
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.setEmail(userUpdates.getEmail());
         user.setFirstName(userUpdates.getFirstName());
@@ -48,6 +53,7 @@ public class UserServiceImpl implements UserService {
         user.setBirthDate(userUpdates.getBirthDate());
         user.setAddress(userUpdates.getAddress());
         user.setPhoneNumber(userUpdates.getPhoneNumber());
+
         return userRepository.save(user);
     }
 

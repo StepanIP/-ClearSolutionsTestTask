@@ -40,7 +40,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("update-all/{id}/")
+    @PutMapping("update-all/{id}")
     public ResponseEntity<UserResponse> updateAllUserFields(@PathVariable Long id, @RequestBody User userUpdates) {
         User updatedUser = userService.updateAllUserFields(id, userUpdates);
         String requestUrl = getRequestUrl();

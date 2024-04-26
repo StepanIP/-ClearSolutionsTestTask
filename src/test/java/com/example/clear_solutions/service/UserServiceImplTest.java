@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 
@@ -18,6 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+
 
 public class UserServiceImplTest {
 
@@ -72,12 +74,30 @@ public class UserServiceImplTest {
     public void updateAllUserFieldsReturnsUpdatedUser() {
         User user = new User();
         user.setId(1L);
+        user.setEmail("testemail@example.com");
+        user.setFirstName("Test");
+        user.setLastName("User");
+        user.setBirthDate(LocalDate.of(1990, 1, 1));
+        user.setAddress("Test Address");
+        user.setPhoneNumber("1234567890");
+
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
 
         User updatedUser = userService.updateAllUserFields(1L, user);
 
         assertEquals(user, updatedUser);
+    }
+    @Test
+    @DisplayName("Updating all user fields with missing fields throws IllegalArgumentException")
+    public void updateAllUserFieldsWithMissingFieldsThrowsException() {
+        User userUpdates = new User();
+        userUpdates.setId(1L);
+        userUpdates.setEmail("newemail@example.com");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
+
+        assertThrows(IllegalArgumentException.class, () -> userService.updateAllUserFields(1L, userUpdates));
     }
 
     @Test
